@@ -1,0 +1,1072 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model action_type_notifications {
+  id            Int             @id @default(autoincrement())
+  title         String
+  notifications notifications[]
+}
+
+model article_services {
+  id                      Int                       @id
+  title                   String
+  code                    String?
+  status                  Int?
+  type                    Int?
+  article_sub_services    article_sub_services[]
+  cvs_services            cvs_services[]
+  orders_article_services orders_article_services[]
+}
+
+model article_sub_services {
+  id                          Int                           @id
+  article_services_id         Int
+  title                       String
+  code                        String
+  pay_rate                    Float
+  max_pay_rate                Float?
+  status                      Int
+  content_length              Int?
+  min_length                  Int?
+  max_length                  Int?
+  step                        Int?
+  step_price                  Float?
+  min_price                   Float?
+  max_price                   Float?
+  price                       Float
+  created_at                  DateTime                      @default(now())
+  updated_at                  DateTime                      @default(now())
+  article_services            article_services              @relation(fields: [article_services_id], references: [id])
+  orders_article_sub_services orders_article_sub_services[]
+
+  @@index([article_services_id], map: "article_sub_services_article_services_id_fkey")
+}
+
+model articles {
+  id                                             Int                          @id @default(autoincrement())
+  old_id                                         String?
+  order_id                                       Int?
+  old_order_id                                   String?
+  approve_version_id                             Int?                         @unique
+  old_approve_version_id                         String?
+  description                                    String?                      @db.Text
+  orders_article_sub_services_id                 Int?
+  orders_article_services_id                     Int?
+  old_writer_id                                  String?
+  writer_id                                      String?
+  due_date                                       DateTime?
+  editor                                         String?                      @default("ckeditor")
+  feed_back_count                                Int?
+  label                                          String?                      @default("Nhãn bài viết")
+  status                                         Int
+  pay_price                                      Float?
+  isPaid                                         Boolean?                     @default(false)
+  title                                          String?                      @db.Text
+  type                                           String?                      @default("article")
+  done_at                                        DateTime?
+  created_at                                     DateTime?                    @default(now())
+  updated_at                                     DateTime?                    @default(now())
+  contents_articles_approve_version_idTocontents contents?                    @relation("articles_approve_version_idTocontents", fields: [approve_version_id], references: [id])
+  orders                                         orders?                      @relation(fields: [order_id], references: [id])
+  orders_article_services                        orders_article_services?     @relation(fields: [orders_article_services_id], references: [id])
+  orders_article_sub_services                    orders_article_sub_services? @relation(fields: [orders_article_sub_services_id], references: [id])
+  task_status                                    task_status                  @relation(fields: [status], references: [id])
+  users                                          users?                       @relation(fields: [writer_id], references: [id], onDelete: Cascade)
+  contents_contents_article_idToarticles         contents[]                   @relation("contents_article_idToarticles")
+  key_phrases_article                            key_phrases_article[]
+  pay_transaction_articles                       pay_transaction_articles?
+  pictures                                       pictures[]
+  rating_articles                                rating_articles[]
+  status_histories                               status_histories[]
+  user_articles                                  user_articles[]
+
+  @@index([order_id], map: "articles_order_id_fkey")
+  @@index([orders_article_services_id], map: "articles_orders_article_services_id_fkey")
+  @@index([orders_article_sub_services_id], map: "articles_orders_article_sub_services_id_fkey")
+  @@index([status], map: "articles_status_fkey")
+  @@index([writer_id], map: "articles_writer_id_fkey")
+}
+
+model bookings {
+  id                            Int                          @id @default(autoincrement())
+  old_id                        String?
+  order_id                      Int
+  old_order_id                  String?
+  note                          String?                      @db.Text
+  number_article                Int
+  order_article_services_id     Int?
+  order_article_sub_services_id Int?
+  price                         Float
+  writer_id                     String?
+  writerName                    String?
+  status                        Int?                         @default(0)
+  due_date                      DateTime?
+  created_at                    DateTime                     @default(now())
+  updated_at                    DateTime                     @default(now())
+  orders_article_services       orders_article_services?     @relation(fields: [order_article_services_id], references: [id])
+  orders_article_sub_services   orders_article_sub_services? @relation(fields: [order_article_sub_services_id], references: [id])
+  orders                        orders                       @relation(fields: [order_id], references: [id])
+  users                         users?                       @relation(fields: [writer_id], references: [id])
+
+  @@index([order_article_services_id], map: "bookings_order_article_services_id_fkey")
+  @@index([order_article_sub_services_id], map: "bookings_order_article_sub_services_id_fkey")
+  @@index([order_id], map: "bookings_order_id_fkey")
+  @@index([writer_id], map: "bookings_writer_id_fkey")
+}
+
+model categories {
+  id             Int              @id
+  type           Int
+  title          String
+  cvs_categories cvs_categories[]
+  orders         orders[]
+}
+
+model contents {
+  id                                             Int       @id @default(autoincrement())
+  old_id                                         String?
+  old_article_id                                 String?
+  article_id                                     Int
+  content                                        String    @db.LongText
+  is_approved                                    Boolean   @default(false)
+  created_at                                     DateTime  @default(now())
+  updated_at                                     DateTime  @default(now())
+  articles_articles_approve_version_idTocontents articles? @relation("articles_approve_version_idTocontents")
+  articles_contents_article_idToarticles         articles  @relation("contents_article_idToarticles", fields: [article_id], references: [id])
+
+  @@index([article_id], map: "contents_article_id_fkey")
+}
+
+model customer_feedback {
+  id                   Int               @id @default(autoincrement())
+  question_id          Int
+  service_feedback_id  Int
+  oldServiceFeedbackId String?
+  star_rating          Int
+  questions            questions         @relation(fields: [question_id], references: [id])
+  service_feedbacks    service_feedbacks @relation(fields: [service_feedback_id], references: [id])
+
+  @@index([question_id], map: "customer_feedback_question_id_fkey")
+  @@index([service_feedback_id], map: "customer_feedback_service_feedback_id_fkey")
+}
+
+model cvs {
+  id                Int                 @id @default(autoincrement())
+  old_id            String?
+  uid               Int?
+  address           String?
+  admin_note        String?             @db.Text
+  avatar            String?
+  birthday          DateTime?
+  email             String
+  name              String
+  note              String              @db.LongText
+  phone_number      String
+  status            Int
+  favourite         Boolean?            @default(false)
+  old_user_id       String?
+  user_id           String?             @unique
+  level_id          Int
+  experience_id     Int?
+  updated_at        DateTime            @default(now())
+  created_at        DateTime            @default(now())
+  cvs_experiences   cvs_experiences?    @relation(fields: [experience_id], references: [id])
+  cvs_levels        cvs_levels          @relation(fields: [level_id], references: [id])
+  cvs_status        cvs_status          @relation(fields: [status], references: [id])
+  users             users?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  cvs_categories    cvs_categories[]
+  cvs_documents     cvs_documents[]
+  cvs_services      cvs_services[]
+  cvs_socials       cvs_socials[]
+  writer_cv_ranking writer_cv_ranking[]
+
+  @@index([experience_id], map: "cvs_experience_id_fkey")
+  @@index([level_id], map: "cvs_level_id_fkey")
+  @@index([status], map: "cvs_status_fkey")
+}
+
+model cvs_categories {
+  id          Int        @id @default(autoincrement())
+  old_cv_id   String?
+  category_id Int
+  cv_id       Int
+  categories  categories @relation(fields: [category_id], references: [id])
+  cvs         cvs        @relation(fields: [cv_id], references: [id])
+
+  @@index([category_id], map: "cvs_categories_category_id_fkey")
+  @@index([cv_id], map: "cvs_categories_cv_id_fkey")
+}
+
+model cvs_documents {
+  id         Int      @id @default(autoincrement())
+  old_id     String?
+  path       String
+  name       String
+  old_cv_id  String?
+  cv_id      Int
+  status     Int?     @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  cvs        cvs      @relation(fields: [cv_id], references: [id])
+
+  @@index([cv_id], map: "cvs_documents_cv_id_fkey")
+}
+
+model cvs_experiences {
+  id    Int    @id
+  title String
+  cvs   cvs[]
+}
+
+model cvs_levels {
+  id    Int    @id
+  type  Int
+  title String
+  cvs   cvs[]
+}
+
+model cvs_ranking {
+  id                Int                 @id
+  title             String
+  writer_cv_ranking writer_cv_ranking[]
+}
+
+model cvs_services {
+  id               Int              @id @default(autoincrement())
+  old_service_id   Int?
+  old_cv_id        String?
+  cv_id            Int
+  service_id       Int
+  cvs              cvs              @relation(fields: [cv_id], references: [id])
+  article_services article_services @relation(fields: [service_id], references: [id])
+
+  @@index([cv_id], map: "cvs_services_cv_id_fkey")
+  @@index([service_id], map: "cvs_services_service_id_fkey")
+}
+
+model cvs_socials {
+  id        Int     @id @default(autoincrement())
+  name      String
+  url       String  @db.Text
+  status    Int?    @default(1)
+  old_cv_id String?
+  cv_id     Int
+  cvs       cvs     @relation(fields: [cv_id], references: [id])
+
+  @@index([cv_id], map: "cvs_socials_cv_id_fkey")
+}
+
+model cvs_status {
+  id    Int    @id
+  title String
+  cvs   cvs[]
+}
+
+model deposit_transactions {
+  id             Int          @id @default(autoincrement())
+  customer_id    String
+  order_id       Int
+  transaction_id Int          @unique
+  users          users        @relation(fields: [customer_id], references: [id])
+  orders         orders       @relation(fields: [order_id], references: [id])
+  transactions   transactions @relation(fields: [transaction_id], references: [id])
+
+  @@index([customer_id], map: "deposit_transactions_customer_id_fkey")
+  @@index([order_id], map: "deposit_transactions_order_id_fkey")
+}
+
+model design_services {
+  id                     Int                      @id
+  title                  String
+  code                   String?
+  status                 Int
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime                 @default(now())
+  design_sub_services    design_sub_services[]
+  orders_design_services orders_design_services[]
+}
+
+model design_sub_services {
+  id                         Int                          @id
+  design_services_id         Int
+  title                      String
+  code                       String?
+  pay_rate                   Float?
+  max_pay_rate               Float?
+  status                     Int?
+  price                      Float?
+  max_price                  Float?
+  min_price                  Float?
+  created_at                 DateTime                     @default(now())
+  updated_at                 DateTime                     @default(now())
+  design_services            design_services              @relation(fields: [design_services_id], references: [id])
+  orders_design_sub_services orders_design_sub_services[]
+
+  @@index([design_services_id], map: "design_sub_services_design_services_id_fkey")
+}
+
+model documents {
+  id            Int      @id @default(autoincrement())
+  old_id        String?
+  path          String
+  status        Int
+  size          Float
+  type          String
+  name          String?
+  old_author_id String?
+  author_id     String
+  uploaded_at   DateTime
+  old_order_id  String?
+  order_id      Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+  users         users    @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  orders        orders   @relation(fields: [order_id], references: [id])
+
+  @@index([author_id], map: "documents_author_id_fkey")
+  @@index([order_id], map: "documents_order_id_fkey")
+}
+
+model emojis {
+  id   Int    @id @default(autoincrement())
+  name String
+  icon String
+}
+
+model extra_info_data {
+  id      Int     @id @default(autoincrement())
+  keyword String? @db.LongText
+  note    String? @db.LongText
+  title   String? @db.LongText
+  tone    String? @db.LongText
+  orders  orders?
+}
+
+model group_chats {
+  id                                               Int            @id @default(autoincrement())
+  old_id                                           String?
+  name                                             String?
+  description                                      String
+  old_order_id                                     String?
+  order_id                                         Int            @unique
+  status                                           Int
+  latest_message_id                                Int            @unique
+  old_latest_message_id                            String
+  created_at                                       DateTime       @default(now())
+  updated_at                                       DateTime       @default(now())
+  messages_group_chats_latest_message_idTomessages messages       @relation("group_chats_latest_message_idTomessages", fields: [latest_message_id], references: [id])
+  orders                                           orders         @relation(fields: [order_id], references: [id])
+  status_chat                                      status_chat    @relation(fields: [status], references: [id])
+  member_chats                                     member_chats[]
+  messages_messages_chat_idTogroup_chats           messages[]     @relation("messages_chat_idTogroup_chats")
+
+  @@index([status], map: "group_chats_status_fkey")
+}
+
+model image_version {
+  id           Int      @id @default(autoincrement())
+  old_image_id String?
+  image_id     Int
+  name         String
+  path         String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  images       images   @relation(fields: [image_id], references: [id])
+
+  @@index([image_id], map: "image_version_image_id_fkey")
+}
+
+model images {
+  id             Int             @id @default(autoincrement())
+  old_id         String?
+  title          String
+  old_picture_id String?
+  picture_id     Int?
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @default(now())
+  image_version  image_version[]
+  pictures       pictures?       @relation(fields: [picture_id], references: [id])
+
+  @@index([picture_id], map: "images_picture_id_fkey")
+}
+
+model key_phrases_article {
+  id             Int      @id @default(autoincrement())
+  article_id     Int
+  old_article_id String?
+  text           String   @db.Text
+  articles       articles @relation(fields: [article_id], references: [id])
+
+  @@index([article_id], map: "key_phrases_article_article_id_fkey")
+}
+
+model links {
+  id             Int      @id @default(autoincrement())
+  name           String?
+  url            String?
+  old_picture_id String?
+  picture_id     Int
+  pictures       pictures @relation(fields: [picture_id], references: [id])
+
+  @@index([picture_id], map: "links_picture_id_fkey")
+}
+
+model member_chats {
+  id          Int         @id @default(autoincrement())
+  old_chat_id String?
+  old_user_id String?
+  chat_id     Int
+  user_id     String
+  group_chats group_chats @relation(fields: [chat_id], references: [id])
+  users       users       @relation(fields: [user_id], references: [id])
+
+  @@index([chat_id], map: "member_chats_chat_id_fkey")
+  @@index([user_id], map: "member_chats_user_id_fkey")
+}
+
+model messages {
+  id                                                  Int          @id @default(autoincrement())
+  old_id                                              String?
+  message                                             String       @db.Text
+  emoji                                               String
+  file                                                String
+  image                                               String
+  type                                                String
+  old_chat_id                                         String?
+  chat_id                                             Int
+  old_sender_id                                       String?
+  sender_id                                           String
+  old_message_reply_id                                String?
+  message_reply_id                                    Int?         @unique
+  created_at                                          DateTime     @default(now())
+  updated_at                                          DateTime     @default(now())
+  group_chats_group_chats_latest_message_idTomessages group_chats? @relation("group_chats_latest_message_idTomessages")
+  group_chats_messages_chat_idTogroup_chats           group_chats  @relation("messages_chat_idTogroup_chats", fields: [chat_id], references: [id])
+  messages                                            messages?    @relation("messagesTomessages", fields: [message_reply_id], references: [id])
+  other_messages                                      messages?    @relation("messagesTomessages")
+  users                                               users        @relation(fields: [sender_id], references: [id])
+
+  @@index([chat_id], map: "messages_chat_id_fkey")
+  @@index([sender_id], map: "messages_sender_id_fkey")
+}
+
+model model_notifications {
+  id            Int             @id @default(autoincrement())
+  title         String
+  notifications notifications[]
+}
+
+model notifications {
+  id                           Int                       @id @default(autoincrement())
+  user_id                      String
+  action_type_notifications_id Int
+  model_notifications_id       Int
+  ref_id                       Int
+  title                        String
+  description                  String
+  is_read                      Int                       @default(0)
+  created_at                   DateTime                  @default(now())
+  updated_at                   DateTime                  @default(now())
+  is_test                      Boolean?
+  avc                          String
+  action_type_notifications    action_type_notifications @relation(fields: [action_type_notifications_id], references: [id])
+  model_notifications          model_notifications       @relation(fields: [model_notifications_id], references: [id])
+  users                        users                     @relation(fields: [user_id], references: [id])
+
+  @@index([action_type_notifications_id], map: "notifications_action_type_notifications_id_fkey")
+  @@index([model_notifications_id], map: "notifications_model_notifications_id_fkey")
+  @@index([user_id], map: "notifications_user_id_fkey")
+}
+
+model order_payment_status {
+  id     Int      @id
+  title  String
+  orders orders[]
+}
+
+model order_price {
+  id            Int     @id @default(autoincrement())
+  price         Float
+  discountPrice Float
+  totalPrice    Float
+  image_design  Int?    @default(0)
+  article_post  Int?    @default(0)
+  orders        orders?
+}
+
+model order_status {
+  id     Int      @id
+  title  String
+  orders orders[]
+}
+
+model orders {
+  id                              Int                    @id @default(autoincrement())
+  old_id                          String?
+  orders_article_id               Int?                   @unique
+  orders_design_id                Int?                   @unique
+  created_by_admin                Boolean
+  custom_id                       String?
+  old_customer_id                 String?
+  customer_id                     String?
+  old_admin_id                    String?
+  admin_id                        String?
+  order_price_id                  Int?                   @unique
+  voucher_id                      Int?
+  type                            String?
+  due_date                        DateTime?
+  status                          Int?                   @default(0)
+  category_id                     Int?
+  payment_id                      Int?
+  done_at                         DateTime?
+  started_at                      DateTime?
+  article_extra_info_data_id      Int                    @unique
+  created_at                      DateTime               @default(now())
+  updated_at                      DateTime               @default(now())
+  articles                        articles[]
+  bookings                        bookings[]
+  deposit_transactions            deposit_transactions[]
+  documents                       documents[]
+  group_chats                     group_chats?
+  users_orders_admin_idTousers    users?                 @relation("orders_admin_idTousers", fields: [admin_id], references: [id])
+  extra_info_data                 extra_info_data        @relation(fields: [article_extra_info_data_id], references: [id])
+  categories                      categories?            @relation(fields: [category_id], references: [id])
+  users_orders_customer_idTousers users?                 @relation("orders_customer_idTousers", fields: [customer_id], references: [id], onDelete: Cascade)
+  order_price                     order_price?           @relation(fields: [order_price_id], references: [id])
+  orders_article                  orders_article?        @relation(fields: [orders_article_id], references: [id])
+  orders_design                   orders_design?         @relation(fields: [orders_design_id], references: [id])
+  order_payment_status            order_payment_status?  @relation(fields: [payment_id], references: [id])
+  order_status                    order_status?          @relation(fields: [status], references: [id])
+  vouchers                        vouchers?              @relation(fields: [voucher_id], references: [id])
+  pay_transactions                pay_transactions[]
+  pictures                        pictures[]
+  revenue_transactions            revenue_transactions[]
+  service_feedbacks               service_feedbacks?
+  transactions                    transactions[]
+  user_orders                     user_orders[]
+
+  @@index([admin_id], map: "orders_admin_id_fkey")
+  @@index([category_id], map: "orders_category_id_fkey")
+  @@index([customer_id], map: "orders_customer_id_fkey")
+  @@index([payment_id], map: "orders_payment_id_fkey")
+  @@index([status], map: "orders_status_fkey")
+  @@index([voucher_id], map: "orders_voucher_id_fkey")
+}
+
+model orders_article {
+  id                      Int                       @id @default(autoincrement())
+  lang                    Int
+  date                    DateTime?
+  orders                  orders?
+  orders_article_services orders_article_services[]
+}
+
+model orders_article_services {
+  id                          Int                           @id @default(autoincrement())
+  orders_article_id           Int
+  article_services_id         Int
+  articles                    articles[]
+  bookings                    bookings[]
+  article_services            article_services              @relation(fields: [article_services_id], references: [id])
+  orders_article              orders_article                @relation(fields: [orders_article_id], references: [id])
+  orders_article_sub_services orders_article_sub_services[]
+
+  @@index([article_services_id], map: "orders_article_services_article_services_id_fkey")
+  @@index([orders_article_id], map: "orders_article_services_orders_article_id_fkey")
+}
+
+model orders_article_sub_services {
+  id                        Int                     @id @default(autoincrement())
+  order_article_services_id Int
+  article_sub_services_id   Int?
+  number                    Int
+  default_price             Float?
+  price                     Float
+  content_length            Int?
+  articles                  articles[]
+  bookings                  bookings[]
+  article_sub_services      article_sub_services?   @relation(fields: [article_sub_services_id], references: [id])
+  orders_article_services   orders_article_services @relation(fields: [order_article_services_id], references: [id])
+
+  @@index([article_sub_services_id], map: "orders_article_sub_services_article_sub_services_id_fkey")
+  @@index([order_article_services_id], map: "orders_article_sub_services_order_article_services_id_fkey")
+}
+
+model orders_design {
+  id                     Int                      @id @default(autoincrement())
+  number                 Int?                     @default(1)
+  date                   DateTime?
+  orders                 orders?
+  orders_design_services orders_design_services[]
+}
+
+model orders_design_services {
+  id                         Int                          @id @default(autoincrement())
+  orders_design_id           Int
+  service_id                 Int
+  orders_design              orders_design                @relation(fields: [orders_design_id], references: [id])
+  design_services            design_services              @relation(fields: [service_id], references: [id])
+  orders_design_sub_services orders_design_sub_services[]
+
+  @@index([orders_design_id], map: "orders_design_services_orders_design_id_fkey")
+  @@index([service_id], map: "orders_design_services_service_id_fkey")
+}
+
+model orders_design_sub_services {
+  id                       Int                    @id @default(autoincrement())
+  order_design_services_id Int
+  design_sub_services_id   Int
+  price                    Float
+  default_price            Float?
+  number                   Int
+  design_sub_services      design_sub_services    @relation(fields: [design_sub_services_id], references: [id])
+  orders_design_services   orders_design_services @relation(fields: [order_design_services_id], references: [id])
+  pictures                 pictures[]
+
+  @@index([design_sub_services_id], map: "orders_design_sub_services_design_sub_services_id_fkey")
+  @@index([order_design_services_id], map: "orders_design_sub_services_order_design_services_id_fkey")
+}
+
+model pay_transaction_articles {
+  id                 Int              @id @default(autoincrement())
+  article_id         Int              @unique
+  pay_transaction_id Int
+  status             Int?             @default(0)
+  note               String?          @db.Text
+  articles           articles         @relation(fields: [article_id], references: [id])
+  pay_transactions   pay_transactions @relation(fields: [pay_transaction_id], references: [id])
+
+  @@index([pay_transaction_id], map: "pay_transaction_articles_pay_transaction_id_fkey")
+}
+
+model pay_transactions {
+  id                       Int                        @id @default(autoincrement())
+  writer_id                String
+  order_id                 Int
+  transaction_id           Int?
+  created_at               DateTime                   @default(now())
+  updated_at               DateTime                   @default(now())
+  pay_transaction_articles pay_transaction_articles[]
+  orders                   orders                     @relation(fields: [order_id], references: [id])
+  transactions             transactions?              @relation(fields: [transaction_id], references: [id])
+  users                    users                      @relation(fields: [writer_id], references: [id])
+
+  @@index([order_id], map: "pay_transactions_order_id_fkey")
+  @@index([transaction_id], map: "pay_transactions_transaction_id_fkey")
+  @@index([writer_id], map: "pay_transactions_writer_id_fkey")
+}
+
+model picture_layouts {
+  id       Int        @id
+  number   Int
+  name     String
+  pictures pictures[]
+}
+
+model pictures {
+  id                            Int                         @id @default(autoincrement())
+  old_id                        String?
+  approved_version              Int?
+  old_article_id                String?
+  article_id                    Int?
+  order_id                      Int?
+  old_designer_id               String?
+  designer_id                   String?
+  due_date                      DateTime?
+  feedback_count                Int?                        @default(0)
+  label                         String?                     @db.Text
+  note                          String?                     @db.Text
+  number                        Int?
+  picture_layout_id             Int?
+  status                        Int?
+  orders_design_sub_services_id Int?
+  title                         String?                     @db.Text
+  type                          String?
+  done_at                       DateTime?
+  created_at                    DateTime?                   @default(now())
+  updated_at                    DateTime?                   @default(now())
+  images                        images[]
+  links                         links[]
+  articles                      articles?                   @relation(fields: [article_id], references: [id])
+  users                         users?                      @relation(fields: [designer_id], references: [id])
+  orders                        orders?                     @relation(fields: [order_id], references: [id])
+  orders_design_sub_services    orders_design_sub_services? @relation(fields: [orders_design_sub_services_id], references: [id])
+  picture_layouts               picture_layouts?            @relation(fields: [picture_layout_id], references: [id])
+  task_status                   task_status?                @relation(fields: [status], references: [id])
+  status_histories              status_histories[]
+  user_pictures                 user_pictures[]
+
+  @@index([article_id], map: "pictures_article_id_fkey")
+  @@index([designer_id], map: "pictures_designer_id_fkey")
+  @@index([order_id], map: "pictures_order_id_fkey")
+  @@index([orders_design_sub_services_id], map: "pictures_orders_design_sub_services_id_fkey")
+  @@index([picture_layout_id], map: "pictures_picture_layout_id_fkey")
+  @@index([status], map: "pictures_status_fkey")
+}
+
+model questions {
+  id                Int                 @id @default(autoincrement())
+  star_rating       Int
+  type              String
+  title             String
+  customer_feedback customer_feedback[]
+}
+
+model rating_articles {
+  id                     Int                 @id @default(autoincrement())
+  rating_seo_articles_id Int
+  article_id             Int
+  old_article_id         String?
+  articles               articles            @relation(fields: [article_id], references: [id])
+  rating_seo_articles    rating_seo_articles @relation(fields: [rating_seo_articles_id], references: [id])
+
+  @@index([article_id], map: "rating_articles_article_id_fkey")
+  @@index([rating_seo_articles_id], map: "rating_articles_rating_seo_articles_id_fkey")
+}
+
+model rating_seo_articles {
+  id              Int               @id
+  title           String
+  rating_articles rating_articles[]
+}
+
+model recharge_transactions {
+  id             Int          @id @default(autoincrement())
+  customer_id    String
+  owner          String       @default("Wecontent")
+  transaction_id Int          @unique
+  users          users        @relation(fields: [customer_id], references: [id])
+  transactions   transactions @relation(fields: [transaction_id], references: [id])
+
+  @@index([customer_id], map: "recharge_transactions_customer_id_fkey")
+}
+
+model revenue_transactions {
+  id             Int          @id @default(autoincrement())
+  order_id       Int
+  owner          String       @default("Wecontent")
+  transaction_id Int          @unique
+  orders         orders       @relation(fields: [order_id], references: [id])
+  transactions   transactions @relation(fields: [transaction_id], references: [id])
+
+  @@index([order_id], map: "revenue_transactions_order_id_fkey")
+}
+
+model roles {
+  id    Int     @id
+  title String
+  users users[]
+}
+
+model service_feedbacks {
+  id                Int                 @id @default(autoincrement())
+  old_id            String?
+  note_service      String
+  note_writer       String
+  old_order_id      String?
+  order_id          Int                 @unique
+  customer_feedback customer_feedback[]
+  orders            orders              @relation(fields: [order_id], references: [id])
+}
+
+model status_chat {
+  id          Int           @id
+  title       String
+  group_chats group_chats[]
+}
+
+model status_histories {
+  id                                             Int          @id @default(autoincrement())
+  old_id                                         String?
+  old_article_id                                 String?
+  article_id                                     Int?
+  from                                           Int?         @default(0)
+  to                                             Int?         @default(0)
+  old_picture_id                                 String?
+  picture_id                                     Int?
+  type                                           String?
+  old_user_id                                    String?
+  user_id                                        String?
+  created_at                                     DateTime?    @default(now())
+  updated_at                                     DateTime     @default(now())
+  articles                                       articles?    @relation(fields: [article_id], references: [id])
+  task_status_status_histories_fromTotask_status task_status? @relation("status_histories_fromTotask_status", fields: [from], references: [id])
+  pictures                                       pictures?    @relation(fields: [picture_id], references: [id])
+  task_status_status_histories_toTotask_status   task_status? @relation("status_histories_toTotask_status", fields: [to], references: [id])
+  users                                          users?       @relation(fields: [user_id], references: [id])
+
+  @@index([article_id], map: "status_histories_article_id_fkey")
+  @@index([from], map: "status_histories_from_fkey")
+  @@index([picture_id], map: "status_histories_picture_id_fkey")
+  @@index([to], map: "status_histories_to_fkey")
+  @@index([user_id], map: "status_histories_user_id_fkey")
+}
+
+model task_status {
+  id                                                  Int                @id
+  title                                               String
+  articles                                            articles[]
+  pictures                                            pictures[]
+  status_histories_status_histories_fromTotask_status status_histories[] @relation("status_histories_fromTotask_status")
+  status_histories_status_histories_toTotask_status   status_histories[] @relation("status_histories_toTotask_status")
+}
+
+model transaction_images {
+  id                 Int          @id @default(autoincrement())
+  name               String
+  path               String
+  old_transaction_id String?
+  transaction_id     Int
+  transactions       transactions @relation(fields: [transaction_id], references: [id])
+
+  @@index([transaction_id], map: "transaction_images_transaction_id_fkey")
+}
+
+model transactions {
+  id                                         Int                    @id @default(autoincrement())
+  old_id                                     String?
+  banking_id                                 Int?
+  is_approved                                Boolean?               @default(false)
+  is_paid                                    Boolean?               @default(false)
+  note                                       String?                @db.Text
+  type_transactions_id                       Int?
+  value                                      Float
+  valuePay                                   Float?                 @default(0)
+  is_denied                                  Boolean?
+  account_number                             String?
+  banking                                    String?
+  account_name                               String?
+  old_created_user_id                        String?
+  created_user_id                            String?
+  old_order_id                               String?
+  order_id                                   Int?
+  old_approved_user_id                       String?
+  approved_user_id                           String?
+  created_at                                 DateTime?              @default(now())
+  updated_at                                 DateTime               @default(now())
+  deposit_transactions                       deposit_transactions?
+  pay_transactions                           pay_transactions[]
+  recharge_transactions                      recharge_transactions?
+  revenue_transactions                       revenue_transactions?
+  transaction_images                         transaction_images[]
+  users_transactions_approved_user_idTousers users?                 @relation("transactions_approved_user_idTousers", fields: [approved_user_id], references: [id], onDelete: Cascade)
+  user_banking                               user_banking?          @relation(fields: [banking_id], references: [id])
+  users_transactions_created_user_idTousers  users?                 @relation("transactions_created_user_idTousers", fields: [created_user_id], references: [id])
+  orders                                     orders?                @relation(fields: [order_id], references: [id])
+  type_transactions                          type_transactions?     @relation(fields: [type_transactions_id], references: [id])
+  withdraw_request                           withdraw_request?
+  withdraw_transactions                      withdraw_transactions?
+
+  @@index([approved_user_id], map: "transactions_approved_user_id_fkey")
+  @@index([banking_id], map: "transactions_banking_id_fkey")
+  @@index([created_user_id], map: "transactions_created_user_id_fkey")
+  @@index([order_id], map: "transactions_order_id_fkey")
+  @@index([type_transactions_id], map: "transactions_type_transactions_id_fkey")
+}
+
+model type_transactions {
+  id           Int            @id
+  title        String
+  transactions transactions[]
+}
+
+model user_articles {
+  id             Int      @id @default(autoincrement())
+  old_user_id    String?
+  old_article_id String?
+  user_id        String
+  article_id     Int
+  articles       articles @relation(fields: [article_id], references: [id])
+  users          users    @relation(fields: [user_id], references: [id])
+
+  @@index([article_id], map: "user_articles_article_id_fkey")
+  @@index([user_id], map: "user_articles_user_id_fkey")
+}
+
+model user_banking {
+  id             Int            @id @default(autoincrement())
+  user_id        String
+  banking_name   String
+  account_name   String
+  account_number String
+  is_confirm     Boolean        @default(false)
+  status         Boolean        @default(true)
+  qr_image       String?
+  is_active      Boolean        @default(true)
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @default(now())
+  transactions   transactions[]
+  users          users          @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "user_banking_user_id_fkey")
+}
+
+model user_orders {
+  id           Int      @id @default(autoincrement())
+  old_user_id  String?
+  old_order_id String?
+  user_id      String
+  order_id     Int
+  status       Int      @default(1)
+  note         String?  @db.Text
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  orders       orders   @relation(fields: [order_id], references: [id])
+  users        users    @relation(fields: [user_id], references: [id])
+
+  @@index([order_id], map: "user_orders_order_id_fkey")
+  @@index([user_id], map: "user_orders_user_id_fkey")
+}
+
+model user_pictures {
+  id             Int      @id @default(autoincrement())
+  old_picture_id String?
+  old_user_id    String?
+  picture_id     Int
+  user_id        String
+  pictures       pictures @relation(fields: [picture_id], references: [id])
+  users          users    @relation(fields: [user_id], references: [id])
+
+  @@index([picture_id], map: "user_pictures_picture_id_fkey")
+  @@index([user_id], map: "user_pictures_user_id_fkey")
+}
+
+model users {
+  id                                                        String                  @id
+  old_id                                                    String?
+  avatar                                                    String?                 @db.Text
+  email                                                     String?
+  email_verified                                            Boolean?
+  name                                                      String?
+  uid                                                       String?
+  phone_number                                              String?                 @db.Text
+  provider                                                  String?
+  role_id                                                   Int?
+  approved_at                                               DateTime?
+  created_at                                                DateTime?               @default(now())
+  updated_at                                                DateTime?               @default(now())
+  articles                                                  articles[]
+  bookings                                                  bookings[]
+  cvs                                                       cvs?
+  deposit_transactions                                      deposit_transactions[]
+  documents                                                 documents[]
+  member_chats                                              member_chats[]
+  messages                                                  messages[]
+  notifications                                             notifications[]
+  orders_orders_admin_idTousers                             orders[]                @relation("orders_admin_idTousers")
+  orders_orders_customer_idTousers                          orders[]                @relation("orders_customer_idTousers")
+  pay_transactions                                          pay_transactions[]
+  pictures                                                  pictures[]
+  recharge_transactions                                     recharge_transactions[]
+  status_histories                                          status_histories[]
+  transactions_transactions_approved_user_idTousers         transactions[]          @relation("transactions_approved_user_idTousers")
+  transactions_transactions_created_user_idTousers          transactions[]          @relation("transactions_created_user_idTousers")
+  user_articles                                             user_articles[]
+  user_banking                                              user_banking[]
+  user_orders                                               user_orders[]
+  user_pictures                                             user_pictures[]
+  roles                                                     roles?                  @relation(fields: [role_id], references: [id])
+  voucher_customers                                         voucher_customers[]
+  vouchers                                                  vouchers[]
+  withdraw_request_withdraw_request_approved_user_idTousers withdraw_request[]      @relation("withdraw_request_approved_user_idTousers")
+  withdraw_request_withdraw_request_writer_idTousers        withdraw_request[]      @relation("withdraw_request_writer_idTousers")
+  withdraw_transactions                                     withdraw_transactions[]
+
+  @@index([role_id], map: "users_role_id_fkey")
+}
+
+model voucher_customers {
+  id          Int      @id @default(autoincrement())
+  voucher_id  Int
+  customer_id String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+  users       users    @relation(fields: [customer_id], references: [id])
+  vouchers    vouchers @relation(fields: [voucher_id], references: [id])
+
+  @@index([customer_id], map: "voucher_customers_customer_id_fkey")
+  @@index([voucher_id], map: "voucher_customers_voucher_id_fkey")
+}
+
+model vouchers {
+  id                    Int                 @id @default(autoincrement())
+  apply_order_max_price Float?
+  apply_order_min_price Float?
+  code                  String
+  old_creator_id        String?
+  creator_id            String
+  desc                  String
+  duration              String
+  exp_date              DateTime
+  image                 String?
+  experience            Int
+  max_amount_of         Float?
+  max_redemption        Float?
+  status                Int
+  times_redeemed        Int
+  title                 String
+  valid                 Boolean
+  value_off             Float
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @default(now())
+  orders                orders[]
+  voucher_customers     voucher_customers[]
+  users                 users               @relation(fields: [creator_id], references: [id], onDelete: Cascade)
+
+  @@index([creator_id], map: "vouchers_creator_id_fkey")
+}
+
+model withdraw_request {
+  id                                             Int           @id @default(autoincrement())
+  old_id                                         String?
+  old_transaction_id                             String?
+  transaction_id                                 Int?          @unique
+  approved_user_id                               String?
+  old_approved_user_id                           String?
+  writer_id                                      String
+  old_writer_id                                  String?
+  approve_at                                     DateTime?
+  value                                          Float?
+  created_at                                     DateTime?     @default(now())
+  updated_at                                     DateTime      @default(now())
+  users_withdraw_request_approved_user_idTousers users?        @relation("withdraw_request_approved_user_idTousers", fields: [approved_user_id], references: [id], onDelete: Cascade)
+  transactions                                   transactions? @relation(fields: [transaction_id], references: [id])
+  users_withdraw_request_writer_idTousers        users         @relation("withdraw_request_writer_idTousers", fields: [writer_id], references: [id], onDelete: Cascade)
+
+  @@index([approved_user_id], map: "withdraw_request_approved_user_id_fkey")
+  @@index([writer_id], map: "withdraw_request_writer_id_fkey")
+}
+
+model withdraw_request_status {
+  id    Int    @id @default(autoincrement())
+  title String
+}
+
+model withdraw_transactions {
+  id             Int          @id @default(autoincrement())
+  writer_id      String
+  owner          String       @default("Wecontent")
+  transaction_id Int          @unique
+  transactions   transactions @relation(fields: [transaction_id], references: [id])
+  users          users        @relation(fields: [writer_id], references: [id])
+
+  @@index([writer_id], map: "withdraw_transactions_writer_id_fkey")
+}
+
+model writer_cv_ranking {
+  id          Int         @id @default(autoincrement())
+  cv_id       Int
+  old_cv_id   String?
+  ranking_id  Int
+  cvs         cvs         @relation(fields: [cv_id], references: [id])
+  cvs_ranking cvs_ranking @relation(fields: [ranking_id], references: [id])
+
+  @@index([cv_id], map: "writer_cv_ranking_cv_id_fkey")
+  @@index([ranking_id], map: "writer_cv_ranking_ranking_id_fkey")
+}
