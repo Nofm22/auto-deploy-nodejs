@@ -97,6 +97,7 @@ model teachers {
   address   String?   @db.VarChar(255)
   email     String?   @db.VarChar(255)
   classId   Int?
+  test      String?
   createdAt DateTime  @db.DateTime(0)
   updatedAt DateTime  @db.DateTime(0)
   courseId  Int?
