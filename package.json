@@ -7,7 +7,8 @@
     "start": "node app.js",
     "migrate:dev":"dotenv -e .env.development -- npx prisma db pull",
     "pull:test":"dotenv -e .env.test -- npx prisma db pull",
-    "migrate:test":"dotenv -e .env.test -- npx prisma migrate dev --name init"
+    "migrate:test":"dotenv -e .env.test -- npx prisma migrate dev --name init",
+    "deploy:test": "dotenv -e .env.test -- npx prisma migrate deploy"
   },
   "author": "",
   "license": "ISC",
