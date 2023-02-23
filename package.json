@@ -4,11 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "pull:dev": "dotenv -e .env.development -- npx prisma db pull",
+    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --name init"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^4.10.1",
+    "dotenv-cli": "^7.0.0",
     "ejs": "^2.3.4",
     "express": "^4.13.3"
   }
