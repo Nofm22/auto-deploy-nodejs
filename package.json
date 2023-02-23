@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^4.10.1",
     "dotenv-cli": "^7.0.0",
     "ejs": "^2.3.4",
     "express": "^4.13.3"
