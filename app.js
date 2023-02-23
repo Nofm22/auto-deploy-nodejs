@@ -8,7 +8,7 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => {
-  res.send("Hello tự deploy được rồi nè mà không biết sao nó chạy được lun á");
+  res.send("Hello from ptnminh with love");
 });
 
 var port = process.env.PORT || 3000;
