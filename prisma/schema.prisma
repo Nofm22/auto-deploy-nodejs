@@ -1,0 +1,103 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model classes {
+  id            Int        @id @default(autoincrement())
+  gradeId       Int?
+  name          String?    @db.VarChar(255)
+  createdAt     DateTime   @db.DateTime(0)
+  updatedAt     DateTime   @db.DateTime(0)
+  numberStudent Int
+  grades        grades?    @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Classes_ibfk_1")
+  students      students[]
+  teachers      teachers[]
+
+  @@index([gradeId], map: "gradeId")
+}
+
+model courses {
+  id        Int      @id @default(autoincrement())
+  gradeId   Int?
+  name      String?  @db.VarChar(255)
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  passScore Float?   @default(5) @db.Float
+  scores    scores[]
+}
+
+model grades {
+  id        Int       @id @default(autoincrement())
+  name      String?   @db.VarChar(255)
+  createdAt DateTime  @db.DateTime(0)
+  updatedAt DateTime  @db.DateTime(0)
+  minOld    Int?
+  maxOld    Int?
+  classes   classes[]
+}
+
+model scores {
+  id          Int       @id @default(autoincrement())
+  courseId    Int?
+  exam15      Float?    @db.Float
+  exam45      Float?    @db.Float
+  examFinal   Float?    @db.Float
+  studentId   Int?
+  semesterOne Boolean
+  semesterTwo Boolean
+  createdAt   DateTime  @db.DateTime(0)
+  updatedAt   DateTime  @db.DateTime(0)
+  courses     courses?  @relation(fields: [courseId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "scores_ibfk_1")
+  students    students? @relation(fields: [studentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "scores_ibfk_2")
+
+  @@index([courseId], map: "courseId")
+  @@index([studentId], map: "studentId")
+}
+
+model sequelizemeta {
+  name String @id @unique(map: "name") @db.VarChar(255)
+}
+
+model students {
+  id        Int       @id @default(autoincrement())
+  name      String?   @db.VarChar(255)
+  gender    Boolean?
+  date      DateTime? @db.DateTime(0)
+  address   String?   @db.VarChar(255)
+  email     String?   @db.VarChar(255)
+  classId   Int?
+  createdAt DateTime  @db.DateTime(0)
+  updatedAt DateTime  @db.DateTime(0)
+  scores    scores[]
+  classes   classes?  @relation(fields: [classId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Students_ibfk_1")
+
+  @@index([classId], map: "classId")
+}
+
+model teachers {
+  id        Int       @id @default(autoincrement())
+  name      String?   @db.VarChar(255)
+  gender    Boolean?
+  date      DateTime? @db.DateTime(0)
+  address   String?   @db.VarChar(255)
+  email     String?   @db.VarChar(255)
+  classId   Int?
+  createdAt DateTime  @db.DateTime(0)
+  updatedAt DateTime  @db.DateTime(0)
+  courseId  Int?
+  userId    Int?
+  gradeId   Int?
+  classes   classes?  @relation(fields: [classId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "teachers_ibfk_1")
+
+  @@index([classId], map: "classId")
+}
+
+model users {
+  id        Int      @id @default(autoincrement())
+  username  String?  @db.VarChar(255)
+  password  String?  @db.VarChar(255)
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  role      String   @default("Teacher") @db.VarChar(255)
+}
