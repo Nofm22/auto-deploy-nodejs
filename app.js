@@ -9,12 +9,12 @@ app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + "/public"));
 
-app.get("/", async (req, res) => {
+app.get("/test", async (req, res) => {
   const users = await prisma.users.findMany();
   res.send(users);
 });
 
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
   res.send("from phan tai nhat minh with love");
 });
 
