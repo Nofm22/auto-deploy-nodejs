@@ -7,11 +7,11 @@ sudo chmod -R 777 /home/ec2-user/auto-deploy-nodejs
 cd /home/ec2-user/auto-deploy-nodejs
 
 # create .env file
-touch .env 
+# touch .env 
 
 # add database url to .env
 
-echo DATABASE_URL=${DATABASE_URL} > .env
+# echo DATABASE_URL=${DATABASE_URL} > .env
 
 #add npm and node to path
 export NVM_DIR="$HOME/.nvm"	
