@@ -15,7 +15,7 @@ app.get("/test", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("chạy được rồi nè :(((");
+  res.send("chạy được rồi nè :((( hú hú");
 });
 
 var port = process.env.PORT || 3000;
