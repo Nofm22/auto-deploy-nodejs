@@ -4,12 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "dotenv -e .env.test node app.js",
+    "start": "dotenv -e .env.development node app.js",
     "pull:dev":"dotenv -e .env.development -- npx prisma db pull",
     "migrate:dev":"dotenv -e .env.development -- npx prisma migrate dev --name init",
     "pull:test":"dotenv -e .env.test -- npx prisma db pull",
     "migrate:test":"dotenv -e .env.test -- npx prisma migrate dev --name init",
-    "deploy:test": "dotenv -e .env.test -- npx prisma migrate deploy",
+    "deploy:test": "dotenv -e .env -- npx prisma migrate deploy",
     "deploy:dev": "dotenv -e .env.development -- npx prisma migrate deploy"
   },
   "author": "",
