@@ -1,16 +1,4 @@
 -- CreateTable
-CREATE TABLE `users` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(255) NULL,
-    `password` VARCHAR(255) NULL,
-    `createdAt` DATETIME(0) NOT NULL,
-    `updatedAt` DATETIME(0) NOT NULL,
-    `role` VARCHAR(255) NOT NULL DEFAULT 'Teacher',
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `classes` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `gradeId` INTEGER NULL,
@@ -98,6 +86,7 @@ CREATE TABLE `teachers` (
     `address` VARCHAR(255) NULL,
     `email` VARCHAR(255) NULL,
     `classId` INTEGER NULL,
+    `test` VARCHAR(191) NULL,
     `createdAt` DATETIME(0) NOT NULL,
     `updatedAt` DATETIME(0) NOT NULL,
     `courseId` INTEGER NULL,
@@ -105,6 +94,18 @@ CREATE TABLE `teachers` (
     `gradeId` INTEGER NULL,
 
     INDEX `classId`(`classId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `users` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(255) NULL,
+    `password` VARCHAR(255) NULL,
+    `createdAt` DATETIME(0) NOT NULL,
+    `updatedAt` DATETIME(0) NOT NULL,
+    `role` VARCHAR(255) NOT NULL DEFAULT 'Teacher',
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
