@@ -21,7 +21,7 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/test", (req, res) => {
-  res.send("Hello world 123");
+  res.send("from phan tai nhat minh with love");
 });
 
 var port = process.env.PORT || 3000;

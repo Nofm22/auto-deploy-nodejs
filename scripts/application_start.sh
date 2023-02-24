@@ -18,7 +18,7 @@ nvm use 16
 npm install -g pm2
 #install node modules
 
-# npm install
+npm install
 
 
 # run prisma
