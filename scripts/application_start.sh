@@ -36,4 +36,4 @@ npm run deploy:test
 
 
 pm2 delete wct_test
-pm2 start app.js --name wct_test
+pm2 start app.js --name wct_test --update-env
