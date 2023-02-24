@@ -16,9 +16,12 @@ app.get("/", async (req, res) => {
       updatedAt: new Date().toISOString(),
     },
   });
-
   const users = await prisma.users.findMany();
   res.send(users);
+});
+
+app.get("/test", (req, res) => {
+  res.send("Hello world");
 });
 
 var port = process.env.PORT || 3000;
