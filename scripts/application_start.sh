@@ -6,6 +6,13 @@ sudo chmod -R 777 /home/ec2-user/auto-deploy-nodejs
 #navigate into our working directory where we have all our github files
 cd /home/ec2-user/auto-deploy-nodejs
 
+# create .env file
+touch .env 
+
+# add database url to .env
+
+echo DATABASE_URL=$DATABASE_URL > .env
+
 #add npm and node to path
 export NVM_DIR="$HOME/.nvm"	
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # loads nvm	
