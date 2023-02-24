@@ -15,7 +15,7 @@ app.get("/test", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("from ptnminh_ with love.");
+  res.send("from ptnminh_ with love. hehe");
 });
 
 var port = process.env.PORT || 3000;
