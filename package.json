@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "dotenv -e .env.development node app.js",
+    "start": "node app.js",
     "pull:dev":"dotenv -e .env.development -- npx prisma db pull",
     "migrate:dev":"dotenv -e .env.development -- npx prisma migrate dev --name init",
     "pull:test":"dotenv -e .env.test -- npx prisma db pull",
