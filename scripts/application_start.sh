@@ -43,4 +43,4 @@ npx prisma migrate deploy
 
 
 pm2 delete wct_test
-pm2 start app.js --name wct_test --update-env
+NODE_ENV=staging pm2 start app.js --name wct_test --update-env

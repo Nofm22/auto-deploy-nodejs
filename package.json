@@ -5,10 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "pull:dev":"dotenv -e .env.development -- npx prisma db pull",
-    "migrate:dev":"dotenv -e .env.development -- npx prisma migrate dev --name init",
-    "pull:test":"dotenv -e .env.test -- npx prisma db pull",
-    "migrate:test":"dotenv -e .env.test -- npx prisma migrate dev --name init",
+    "pull:dev": "dotenv -e .env.development -- npx prisma db pull",
+    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --name init",
+    "pull:test": "dotenv -e .env.test -- npx prisma db pull",
+    "migrate:test": "dotenv -e .env.test -- npx prisma migrate dev --name init",
     "deploy:test": "dotenv -e .env -- npx prisma migrate deploy",
     "deploy:dev": "dotenv -e .env.development -- npx prisma migrate deploy"
   },
@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.10.1",
+    "cross-env": "^7.0.3",
     "dotenv-cli": "^7.0.0",
     "ejs": "^2.3.4",
     "express": "^4.13.3"
