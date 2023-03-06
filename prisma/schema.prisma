@@ -105,4 +105,5 @@ model users {
   createdAt DateTime @db.DateTime(0)
   updatedAt DateTime @db.DateTime(0)
   role      String   @default("Teacher") @db.VarChar(255)
+  isAuth    Boolean?
 }
