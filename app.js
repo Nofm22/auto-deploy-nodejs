@@ -10,6 +10,13 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
 app.get("/test", async (req, res) => {
+  await prisma.users.create({
+    data: {
+      username: "ptnminh_",
+      password: "123",
+      isAuth: 1,
+    },
+  });
   const users = await prisma.users.findMany();
   res.send(users);
 });
