@@ -27,6 +27,6 @@ app.get("/", (req, res) => {
 
 var port = process.env.NODE_ENV === "development" ? 3000 : 3001;
 
-var server = app.listen(port, function (req, res) {
+var server = app.listen(3000, function (req, res) {
   console.log("Catch the action at http://localhost:" + port);
 });

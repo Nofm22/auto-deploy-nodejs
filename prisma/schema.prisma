@@ -99,11 +99,11 @@ model teachers {
 }
 
 model users {
-  id        Int      @id @default(autoincrement())
-  username  String?  @db.VarChar(255)
-  password  String?  @db.VarChar(255)
-  createdAt DateTime @db.DateTime(0)
-  updatedAt DateTime @db.DateTime(0)
-  role      String   @default("Teacher") @db.VarChar(255)
+  id        Int       @id @default(autoincrement())
+  username  String?   @db.VarChar(255)
+  password  String?   @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  updatedAt DateTime? @default(now()) @db.DateTime(0)
+  role      String    @default("Teacher") @db.VarChar(255)
   isAuth    Boolean?
 }
