@@ -14,7 +14,7 @@ app.get("/test", async (req, res) => {
     data: {
       username: "ptnminh_",
       password: "123",
-      isAuth: 1,
+      isAuth: false,
     },
   });
   const users = await prisma.users.findMany();
